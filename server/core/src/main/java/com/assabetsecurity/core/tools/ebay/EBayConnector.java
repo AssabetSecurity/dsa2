@@ -14,12 +14,12 @@ public class EBayConnector {
     private final String url = "http://svcs.ebay.com/services/search/FindingService/v1";
     private final String descriptionHTML = "http://vi.vipr.ebaydesc.com/ws/eBayISAPI.dll?item=";
     private String categoryId;
-    private String queryString;
+    private String prefixQueryString;
     private boolean lastPage = false;
 
     public EBayConnector(String categoryId) {
         this.categoryId = categoryId;
-        this.queryString = url + "?"
+        this.prefixQueryString = url + "?"
                 +  "SECURITY-APPNAME"          +"="+ "BazilTer-bfa5-437f-84a0-bc6bf2582826"
                 + "&"  +  "SERVICE-VERSION"        +"="+ "1.13.0"
                 + "&"  +  "GLOBAL-ID"             +"="+ "EBAY-US"
@@ -30,16 +30,13 @@ public class EBayConnector {
     }
 
 
-    private String getQueryString(){
-        log.info(categoryId);
-        return this.queryString;
+    public String getUltimateQueryString(int page){
+           log.info(prefixQueryString + "&pageNumber=" + page);
+        return this.prefixQueryString + "&pageNumber=" + page;
     }
 
     public String getResponseString(int page) throws IOException {
 
-        String query = "&pageNumber=" + page;
-
-        log.info(query);
 
 
         return "";
