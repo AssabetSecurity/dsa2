@@ -52,6 +52,20 @@ public class FetchEbayTest {
     }
 
 
+    //  returns the request as an XML  structure
+    // 3 tags -  itemId, name, full HTML description content instead of link to it's description
+    @Test
+    public void getResponseWithHTML() throws IOException, ParserConfigurationException, SAXException {
+
+        EBayRequest secondTest = new EBayRequest("550");
+        String ultimateRequest = secondTest.getUltimateQueryStringForPage(1);
+
+        EBayResponse eBayResponse = new EBayResponse(ultimateRequest);
+        log.info("As XML with HTML content as a description");
+        eBayResponse.getAsXMLWithHTML();
+    }
+
+
 
 
 
