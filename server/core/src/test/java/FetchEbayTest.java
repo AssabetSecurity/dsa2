@@ -61,7 +61,7 @@ public class FetchEbayTest {
         String ultimateRequest = secondTest.getUltimateQueryStringForPage(1);
 
         EBayResponse eBayResponse = new EBayResponse(ultimateRequest);
-        log.info("As XML with HTML content as a description");
+        log.info("Response is XML structure with HTML content as a description");
         eBayResponse.getAsXMLWithHTML();
     }
 
