@@ -42,16 +42,12 @@ public class EBayRequest {
         return  out;
     }
 
-    public String getResponseString(int page) throws IOException {
-
-
-
-        return "";
-
-    }
-
-
-
 
 
 }
+
+
+
+
+
+
