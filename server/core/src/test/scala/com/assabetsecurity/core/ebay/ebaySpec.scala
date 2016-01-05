@@ -7,14 +7,19 @@ import akka.actor.Props
 import akka.testkit.TestKit
 import akka.util.Timeout
 import com.assabetsecurity.core.db.MongoRepository
+import com.assabetsecurity.core.tools.ebay.EBayConnector.{EBayItemsIterator}
+
 
 import com.assabetsecurity.core.tools.ebay._
 import com.mongodb.MongoClient
+
 import org.scalatest.WordSpec
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.BeforeAndAfterAll
 import akka.testkit.ImplicitSender
 import org.slf4s.{Logging, Logger}
+import com.novus.salat._
+import com.mongodb.casbah.Imports._
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +35,10 @@ with WordSpec with MustMatchers with BeforeAndAfterAll with Logging {
   def this() = this(ActorSystem("MySpec"))
 
   implicit val timeout = Timeout(10000)
-
+  implicit val ctx: Context = new Context {
+    val name = "DataRecord"
+    override val typeHintStrategy = StringTypeHintStrategy(when = TypeHintFrequency.Always, typeHint = TypeHint)
+  }
   "system" should {
     "start EBayLoader" in {
 
@@ -48,9 +56,55 @@ with WordSpec with MustMatchers with BeforeAndAfterAll with Logging {
       log.debug(""+items)
       items.searchResult.foreach(i=>{
         log.debug(""+i)
-
       })
 
+    }
+    "loadPages from DB" in {
+      val client = new MongoClient("localhost")
+      val ebayCollection = client.getDB("import").getCollection("ebay")
+      val it = ebayCollection.find()
+      val c = new EBayConnector
+      while(it.hasNext) {
+        val dbo  = it.next()
+        val item = grater[Item].asObject(dbo)
+        log.debug(""+item)
+        try {
+          val descXML = c.getDescription(item.itemId)
+          log.debug("" + descXML)
+          val r = EBayDataStore.getSingleItemResponseFromXml(descXML)
+          val toSave = item.copy(description = r.item.flatMap(_.Description))
+          ebayCollection.save(grater[Item].asDBObject(toSave))
+        } catch  {
+          case e:Throwable => {
+            log.error("", e)
+          }
+        }
+      }
+    }
+    "Single Item xml parser" in {
+      val xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>  <GetSingleItemResponse>   <Timestamp>2016-01-05T06:37:03.956Z</Timestamp>   <Ack>Success</Ack>   <Build>E949_CORE_APILW_17769283_R1</Build>   <Version>949</Version>   <Item>    <Description>&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;&lt;font color=&quot;#0000ff&quot; face=&quot;Arial&quot; size=&quot;5&quot;&gt;New Dell Venue 8 7840 Android&amp;nbsp;Tablet- 16GB - Black - WiFi&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;p align=&quot;left&quot;&gt;&lt;b&gt;&lt;font color=&quot;#c00000&quot; face=&quot;Arial&quot; size=&quot;4&quot;&gt;PLEASE READ ALL THE DESCRIPTIONS CAREFULLY BEFORE YOU BID!&lt;/font&gt;&lt;/b&gt;&lt;/p&gt;&lt;p align=&quot;left&quot;&gt;&lt;font face=&quot;Arial&quot;&gt;&lt;b&gt;&lt;font color=&quot;#000080&quot; size=&quot;4&quot;&gt;&lt;/font&gt;&lt;font color=&quot;#002CFD&quot; size=&quot;4&quot;&gt;This auction is for a Brand New Dell Venue 8 7840 - 16GB - Black Android Tablet in original manufacture package.&lt;/font&gt;&lt;/b&gt;&lt;/font&gt;&lt;/p&gt;&lt;p align=&quot;left&quot;&gt;&lt;strong style=&quot;color: rgb(0, 44, 253); font-size: large;&quot;&gt;&lt;font face=&quot;Times New Roman&quot;&gt;&lt;span style=&quot;font-family: Arial;&quot;&gt;What you see in the picture is the actual item.&amp;nbsp; Please ask if you have any questions.&lt;/span&gt;&lt;/font&gt;&lt;/strong&gt;&lt;/p&gt;&lt;li&gt;&lt;blockquote&gt;&lt;p align=&quot;left&quot;&gt;&lt;font face=&quot;Arial&quot; size=&quot;4&quot;&gt;Shipping weight is approx. 2-3 lbs.&lt;/font&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b style=&quot;font-size: large; font-family: Arial;&quot;&gt;&lt;a target=&quot;_blank&quot; href=&quot;http://cgi6.ebay.com/ws/eBayISAPI.dll?ViewSellersOtherItems&amp;amp;userid=dliao007&amp;amp;include=0&amp;amp;since=-1&amp;amp;sort=3&amp;amp;rows=50&quot;&gt;Check out my other items.&lt;/a&gt;&lt;/b&gt;&lt;/div&gt;&lt;font face=&quot;Arial&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;p&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;/li&gt;&lt;hr&gt;&lt;table id=&quot;table6&quot; border=&quot;3&quot; cellpadding=&quot;5&quot; cellspacing=&quot;5&quot; width=&quot;100%&quot; style=&quot;border-collapse: collapse;&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td width=&quot;100%&quot;&gt;&lt;font face=&quot;Arial&quot; size=&quot;2&quot;&gt;&lt;font color=&quot;#000000&quot;&gt;&lt;b&gt;PAYMENT IN CASHIER CHECK OR CREDIT CARDS THROUGH&amp;nbsp;&lt;a target=&quot;_blank&quot; href=&quot;https://secure.paypal.com/affil/pal=dliao007@yahoo.com&quot;&gt;PAYPAL.COM&lt;/a&gt;&lt;/b&gt;&lt;/font&gt;&lt;font color=&quot;#0000ff&quot;&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;b&gt;&lt;font color=&quot;#000000&quot;&gt;ONLY WITHIN 7 DAYS AFTER AUCTION.&lt;/font&gt;&lt;/b&gt;&lt;/font&gt;&lt;font face=&quot;Arial&quot;&gt;&lt;/font&gt;&lt;p align=&quot;left&quot;&gt;&lt;b&gt;&lt;font face=&quot;Arial&quot; size=&quot;2&quot;&gt;&lt;font color=&quot;#800000&quot;&gt;SHIPPING INFORMATION:&lt;/font&gt;&amp;nbsp;&lt;/font&gt;&lt;font color=&quot;#0000ff&quot; face=&quot;Arial&quot; size=&quot;2&quot;&gt;Winning Item is normally shipping within 48 hours.&amp;nbsp; UPS Ground, DHL Ground or USPS&amp;nbsp; w/delivery confirmation is used for shipping within 48 Continental States ONLY. No shipping to PO Boxes or APO addresses. For shipment to Alaska or Hawaii, please email first for the extra charges. No international bidders please. NO local pickup, all item must be shipped. All winning bidder must pay for shipping and handling, NO EXCEPTIONS. For credit card users, I only ship to the address where the account is billed to, no exceptions please.&lt;/font&gt;&lt;/b&gt;&lt;/p&gt;&lt;p align=&quot;left&quot;&gt;&lt;b&gt;&lt;font color=&quot;#800000&quot; face=&quot;Arial&quot; size=&quot;2&quot;&gt;INSURANCE:&lt;/font&gt;&lt;font color=&quot;#0000ff&quot; face=&quot;Arial&quot; size=&quot;2&quot;&gt;&amp;nbsp;Insurance are optional but highly recommended.&lt;/font&gt;&lt;/b&gt;&lt;/p&gt;&lt;p align=&quot;left&quot;&gt;&lt;b&gt;&lt;font color=&quot;#800000&quot; face=&quot;Arial&quot; size=&quot;2&quot;&gt;All sales are FINAL and there will be NO RETURNS unless specifically stated in the item description.&lt;/font&gt;&lt;/b&gt;&lt;/p&gt;&lt;p align=&quot;left&quot;&gt;&lt;b&gt;&lt;font face=&quot;Arial&quot; size=&quot;2&quot;&gt;I reserve the right to cancel bids made by bidder with ZERO or NEGATIVE Feedback. Bidders with ZERO or NEGATIVE Feedback must email first before bidding.&amp;nbsp; Winning bidder must contact me within 3 days, or I reserve the right to re-list the item. I will post POSITIVE feedback to all successful transaction.&lt;/font&gt;&lt;/b&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;</Description>    <ItemID>151914126298</ItemID>    <EndTime>2016-01-11T22:48:42.000Z</EndTime>    <ViewItemURLForNaturalSearch>http://www.ebay.com/itm/NEW-DELL-VENUE-8-7840-16GB-Wi-Fi-ANDROID-BLACK-TABLET-7000-SERIES-/151914126298</ViewItemURLForNaturalSearch>    <ListingType>FixedPriceItem</ListingType>    <Location>El Segundo, California</Location>    <GalleryURL>http://thumbs3.ebaystatic.com/pict/1519141262988080_1.jpg</GalleryURL>    <PictureURL>http://i.ebayimg.com/00/s/OTU4WDE0NjM=/z/YZEAAOSw7FRWbKNm/$_1.JPG?set_id=880000500F</PictureURL>    <PictureURL>http://i.ebayimg.com/00/s/OTc2WDE0OTY=/z/cyoAAOSwf-VWbKN5/$_1.JPG?set_id=880000500F</PictureURL>    <PictureURL>http://i.ebayimg.com/00/s/OTYyWDEyNjQ=/z/YHQAAOSwfZ1WbKOE/$_1.JPG?set_id=880000500F</PictureURL>    <PictureURL>http://i.ebayimg.com/00/s/OTA2WDE0MzA=/z/B-gAAOSwHQ9WbKOR/$_1.JPG?set_id=880000500F</PictureURL>    <PrimaryCategoryID>171485</PrimaryCategoryID>    <PrimaryCategoryName>Computers/Tablets &amp; Networking:iPads, Tablets &amp; eBook Readers</PrimaryCategoryName>    <BidCount>0</BidCount>    <ConvertedCurrentPrice currencyID=\"USD\">244.99</ConvertedCurrentPrice>    <ListingStatus>Active</ListingStatus>    <TimeLeft>P6DT16H11M39S</TimeLeft>    <Title>*NEW* DELL VENUE 8 7840 16GB Wi-Fi ANDROID BLACK TABLET 7000 SERIES</Title>    <Country>US</Country>    <AutoPay>true</AutoPay>    <ConditionID>1000</ConditionID>    <ConditionDisplayName>New</ConditionDisplayName>   </Item>  </GetSingleItemResponse>"
+
+      log.debug(""+EBayDataStore.mapper.writeValueAsString(new GetSingleItemResponse()))
+      val r = EBayDataStore.getSingleItemResponseFromXml(xml)
+      log.debug(""+r)
+    }
+    "loadPages" in {
+
+      val client = new MongoClient("localhost")
+      val ebayCollection = client.getDB("import").getCollection("ebay")
+
+      val it = new EBayItemsIterator(58058)
+      while(it.hasNext) {
+        val s = it.next()
+        //log.info("" + s)
+        val response = EBayDataStore.fromXmlString(s)
+        //log.debug("" + items)
+        response.searchResult.foreach(item=>{
+          log.debug(""+item.itemId)
+          //val dbobj =  grater[Item].asDBObject(item)
+          ebayCollection.save(grater[Item].asDBObject(item))
+        })
+      }
     }
     "parse categories" in {
       val c0 = new Categories(new Category(0, "asd", List.empty)::Nil)
