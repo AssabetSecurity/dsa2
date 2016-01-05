@@ -64,4 +64,4 @@ public class FetchEbayTest {
         eBayResponse.getAsXMLWithHTML();*/
     }
 
-
+}
