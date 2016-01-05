@@ -1,6 +1,6 @@
 package com.assabetsecurity.core.tools.ebay;
 
-import com.assabetsecurity.core.tools.ebay.EBayRequest;
+
 /**
  * Created by alyas on 1/3/16.
  */

@@ -1,6 +1,5 @@
 package com.assabetsecurity.core.tools.ebay;
 
-import com.assabetsecurity.core.tools.ebay.EBayRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
