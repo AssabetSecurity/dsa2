@@ -30,6 +30,7 @@ public class EBayConnector {
     private String prefixQueryString;
 
     private static String appName= "BazilTer-bfa5-437f-84a0-bc6bf2582826";
+
     private static String getFindingServiceUrl(int categoryId) {
         return findingServiceUrl  + "?"
                 +  "SECURITY-APPNAME"          +"="+ appName
@@ -38,7 +39,8 @@ public class EBayConnector {
                 + "&"  + "SERVICE-NAME"           +"="+ "FindingService"
                 + "&"  +  "OPERATION-NAME"         +"="+ "findItemsByCategory"
                 + "&"  +  "RESPONSE-DATA-FORMAT"  +"="+ "XML"
-                + "&"  +  "categoryId"            +"="+ String.valueOf(categoryId);
+                + "&"  +  "categoryId"            +"="+ String.valueOf(categoryId)
+                + "&"  + "sortOrder=StartTimeNewest";
     }
 
 /*
@@ -57,20 +59,21 @@ public class EBayConnector {
 
 
     public String getUltimateQueryString(int page){
-           log.info(prefixQueryString + "&pageNumber=" + page);
-        return this.prefixQueryString + "&pageNumber=" + page;
+           log.info(getFindingServiceUrl(1) + "&pageNumber=" + page);
+        return getFindingServiceUrl(1) + "&pageNumber=" + page;
     }
 
-    public String getResponseString(int page) throws IOException {
-        return "";
-    }
-    HttpClient client = HttpClients.createDefault();;
+
+    HttpClient client = HttpClients.createDefault();
+
     public String getItemDetails(String id) {
 
         String baseUrl = "http://open.api.ebay.com/shopping?" +
                 "callname=GetSingleItem&responseencoding=XML&siteid=0&version=949" +
                 "&appid="+appName+"&IncludeSelector=Description" +
                 "&ItemID="+id;
+
+
         HttpGet httpget = new HttpGet(baseUrl);
         log.info(httpget.getURI().toString());
         try {
@@ -79,6 +82,7 @@ public class EBayConnector {
                 StringBuilder sb = new StringBuilder();
                 String inputLine;
                 BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
                 while ((inputLine = br.readLine()) != null) {
                     sb.append(inputLine);
                 }
