@@ -65,7 +65,7 @@ public class EBayConnector {
         return "";
     }
     HttpClient client = HttpClients.createDefault();;
-    public String getDescription(String id) {
+    public String getItemDetails(String id) {
 
         String baseUrl = "http://open.api.ebay.com/shopping?" +
                 "callname=GetSingleItem&responseencoding=XML&siteid=0&version=949" +

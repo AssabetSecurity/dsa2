@@ -69,7 +69,7 @@ with WordSpec with MustMatchers with BeforeAndAfterAll with Logging {
         val item = grater[Item].asObject(dbo)
         log.debug(""+item)
         try {
-          val descXML = c.getDescription(item.itemId)
+          val descXML = c.getItemDetails(item.itemId)
           log.debug("" + descXML)
           val r = EBayDataStore.getSingleItemResponseFromXml(descXML)
           val toSave = item.copy(description = r.item.flatMap(_.Description))
