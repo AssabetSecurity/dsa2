@@ -11,30 +11,29 @@ import java.util.logging.Logger;
 
 public class FetchEbayTest {
 
-    Logger log = Logger.getLogger(EBayRequest.class.getName());
+    Logger log = Logger.getLogger(FetchEbayTest.class.getName());
 
 
     // category 550, page 1
     @Test
     public void getQueryString() throws IOException {
 
-        EBayRequest firstTest = new EBayRequest("550");
-        String ultimateRequest = firstTest.getUltimateQueryStringForPage(1);
+        EBayConnector firstTest = new EBayConnector();
+        String ultimateRequest = firstTest.getUltimateQueryString(1);
         log.info(ultimateRequest);
         log.info("You can click the above link to get the content in browser");
-
     }
 
 
     // returns the request as an unordered string
     @Test
     public void getResponseAsStringForTheFirstPage() throws IOException {
-
+/*
         EBayRequest secondTest = new EBayRequest("550");
         String ultimateRequest = secondTest.getUltimateQueryStringForPage(1);
 
         EBayResponse eBayResponse = new EBayResponse(ultimateRequest);
-        eBayResponse.getAsString();
+        eBayResponse.getAsString();*/
     }
 
 
@@ -43,12 +42,12 @@ public class FetchEbayTest {
     @Test
     public void getResponseAsXMLForTheFirstPage() throws IOException, ParserConfigurationException, SAXException {
 
-        EBayRequest secondTest = new EBayRequest("550");
+    /*    EBayRequest secondTest = new EBayRequest("550");
         String ultimateRequest = secondTest.getUltimateQueryStringForPage(1);
 
         EBayResponse eBayResponse = new EBayResponse(ultimateRequest);
         log.info("As XML");
-        eBayResponse.getAsXML();
+        eBayResponse.getAsXML();*/
     }
 
 
@@ -56,20 +55,13 @@ public class FetchEbayTest {
     // 3 tags -  itemId, name, full HTML description content instead of link to it's description
     @Test
     public void getResponseWithHTML() throws IOException, ParserConfigurationException, SAXException {
-
+/*
         EBayRequest secondTest = new EBayRequest("550");
         String ultimateRequest = secondTest.getUltimateQueryStringForPage(1);
 
         EBayResponse eBayResponse = new EBayResponse(ultimateRequest);
         log.info("Response is XML structure with HTML content as a description");
-        eBayResponse.getAsXMLWithHTML();
+        eBayResponse.getAsXMLWithHTML();*/
     }
-
-
-
-
-
-
-
 
 }

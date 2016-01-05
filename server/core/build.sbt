@@ -32,6 +32,8 @@ libraryDependencies ++= Seq(
       "commons-net" % "commons-net" % "3.1"
 )
 
+libraryDependencies += "junit" % "junit" % "4.12"
+
 libraryDependencies += "org.clapper" %% "argot" % "1.0.3"
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.6.3"
@@ -43,3 +45,6 @@ libraryDependencies += "com.typesafe.akka" % "akka-testkit_2.10" % "2.1.4"
 libraryDependencies += "com.fasterxml.jackson.dataformat" % "jackson-dataformat-xml" % "2.6.3"
 
 libraryDependencies += "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.6.3"
+
+//libraryDependencies += "org.apache.httpcomponents" %% "httpclient" % "4.5.1"
+libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.3.6"

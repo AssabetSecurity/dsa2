@@ -1,6 +1,5 @@
 package com.assabetsecurity.core.tools.ebay;
 
-import com.assabetsecurity.core.tools.ebay.EBayRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -44,16 +43,16 @@ import java.util.logging.Logger;
 /**
  * Created by george on 1/4/16.
  */
-public class EBayResponse  {
+public class EBayDescriptionPage {
 
     private final String descriptionHTML = "http://vi.vipr.ebaydesc.com/ws/eBayISAPI.dll?item=";
 
-    Logger log = Logger.getLogger(EBayResponse.class.getName());
+    Logger log = Logger.getLogger(EBayDescriptionPage.class.getName());
 
     private String requestString;
 
 
-    public EBayResponse( String requestString) {
+    public EBayDescriptionPage ( String requestString) {
         this.requestString = requestString;
     }
 
