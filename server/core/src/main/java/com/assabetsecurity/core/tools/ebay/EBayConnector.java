@@ -99,10 +99,15 @@ public class EBayConnector {
         int page = 1;
         HttpClient client = null;
         boolean isLastPage = false;
+        String sortOrder = null;
         public EBayItemsIterator(int categoryId) {
+            this(categoryId, null);
+        }
+
+        public EBayItemsIterator(int categoryId, String sortOrder) {
             this.url = getFindingServiceUrl(categoryId);
             this.client = HttpClients.createDefault();
-
+            this.sortOrder = sortOrder;
         }
 
         @Override
