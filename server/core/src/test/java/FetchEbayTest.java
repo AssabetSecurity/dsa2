@@ -14,7 +14,7 @@ public class FetchEbayTest {
     Logger log = Logger.getLogger(FetchEbayTest.class.getName());
 
 
-    // category 550, page 1
+  // querry string for category = 550, page = 1
     @Test
     public void getQueryString() throws IOException {
 
@@ -24,14 +24,19 @@ public class FetchEbayTest {
         log.info("You can click the above link to get the content in browser");
     }
 
+
+    //  item id = 262226307765
+    //  Waterpainted artwork
+
      @Test
     public void geItemDetails() throws IOException {
 
         EBayConnector eBayConnector = new EBayConnector();
-       // String ultimateRequest = firstTest.getUltimateQueryString(1);
-       // log.info(ultimateRequest);
-       // log.info("You can click the above link to get the content in browser");
-    }
+
+         EBayConnector ebc = new EBayConnector();
+         String response = ebc.getItemDetails("262226307765");
+         log.info(response);
+     }
 
 
 
