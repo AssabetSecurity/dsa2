@@ -87,7 +87,8 @@ public class EBayConnector {
                     sb.append(inputLine);
                 }
                 br.close();
-                return sb.toString();
+                log.info(sb.toString());
+                return   sb.toString();
             }
         } catch (IOException e) {
             log.error("", e);
