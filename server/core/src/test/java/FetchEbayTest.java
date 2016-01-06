@@ -18,11 +18,24 @@ public class FetchEbayTest {
     @Test
     public void getQueryString() throws IOException {
 
-        EBayConnector firstTest = new EBayConnector();
-        String ultimateRequest = firstTest.getUltimateQueryString(1);
-        log.info(ultimateRequest);
+        EBayConnector eBayConnector = new EBayConnector();
+        String request = eBayConnector.getUltimateQueryString(550,1);
+        log.info(request);
         log.info("You can click the above link to get the content in browser");
     }
+
+     @Test
+    public void geItemDetails() throws IOException {
+
+        EBayConnector eBayConnector = new EBayConnector();
+       // String ultimateRequest = firstTest.getUltimateQueryString(1);
+       // log.info(ultimateRequest);
+       // log.info("You can click the above link to get the content in browser");
+    }
+
+
+
+
 
 
     // returns the request as an unordered string
