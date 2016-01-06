@@ -58,9 +58,9 @@ public class EBayConnector {
 */
 
 
-    public String getUltimateQueryString(int page){
-           log.info(getFindingServiceUrl(1) + "&pageNumber=" + page);
-        return getFindingServiceUrl(1) + "&pageNumber=" + page;
+    public String getUltimateQueryString(int categoryId,int page){
+           log.info(getFindingServiceUrl(categoryId) + "&pageNumber=" + page);
+        return      getFindingServiceUrl(categoryId) + "&pageNumber=" + page;
     }
 
 
