@@ -31,8 +31,6 @@ public class FetchEbayTest {
      @Test
     public void geItemDetails() throws IOException {
 
-        EBayConnector eBayConnector = new EBayConnector();
-
          EBayConnector ebc = new EBayConnector();
          String response = ebc.getItemDetails("262226307765");
          log.info(response);
@@ -45,13 +43,20 @@ public class FetchEbayTest {
 
     // returns the request as an unordered string
     @Test
-    public void getResponseAsStringForTheFirstPage() throws IOException {
-/*
-        EBayRequest secondTest = new EBayRequest("550");
-        String ultimateRequest = secondTest.getUltimateQueryStringForPage(1);
+    public void getResponseAsStringForThreePages() throws IOException {
 
-        EBayResponse eBayResponse = new EBayResponse(ultimateRequest);
-        eBayResponse.getAsString();*/
+       EBayConnector.EBayItemsIterator iterator
+               = new EBayConnector.EBayItemsIterator(550,"");
+        int i =0;
+        while (iterator.hasNext()) {
+            i++;
+            log.info("page N " + i);
+            String out = iterator.next();
+            log.info(out);
+
+            if (i==3) break;
+        }
+
     }
 
 
