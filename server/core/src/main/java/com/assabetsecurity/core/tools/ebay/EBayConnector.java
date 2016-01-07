@@ -99,6 +99,23 @@ public class EBayConnector {
     //http://open.api.ebay.com/shopping?callname=GetSingleItem&responseencoding=XML&appid=BazilTer-bfa5-437f-84a0-bc6bf2582826&siteid=0&version=515&ItemID=252232453072
     //http://svcs.ebay.com/shopping?callname=GetSingleItem&responseencoding=XML&appid=YourAppIDHere&siteid=0&version=661&IncludeSelector=Description,ItemSpecifics,ShippingCosts&ItemID=110044494992
 
+    public String getItemDescription(String itemId){
+
+        //  String itemDetails = "123456789A123456789B<Description>Hello!</Description>";
+        String itemDetails = getItemDetails(itemId);
+        int start = itemDetails.indexOf("<Description>");
+        int finish = itemDetails.indexOf("</Description>");
+        log.info("" + start + " -> "+ finish);
+        String descString = itemDetails.substring(start+13,finish);
+
+        return descString;
+    }
+
+
+
+
+
+
     public static class EBayItemsIterator implements  Iterator<String> {
         String url;
         int page = 1;
